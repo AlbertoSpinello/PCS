@@ -7,40 +7,54 @@
 #include <set>
 #include <vector>
 
-
 using namespace std;
 using namespace Eigen;
 namespace ProjectLibrary
 {
-inline double f0(double x, double y)
+inline double evaluateExpressionf0(double x, double y, const string& function)
 {
-    return pow((x-0.5),(2)) + pow((y-0.5),(2));
+    if (function=="1")
+        return abs(pow((x-0.5),(2)) + pow((y-0.5),(2)));
+    else if (function=="2")
+        return abs(sin(x - 0.5) + sin(y - 0.5));
+    else if (function=="3")
+        return abs(sqrt(abs(6 * (x - 0.5)) + abs(6 * (y - 0.5))));
+    else if (function=="4")
+        return abs(exp(-(((x - 0.5) * (x - 0.5)) / 0.125 + ((y - 0.5) * (y - 0.5)) / 0.125)));
+    else if (function=="5")
+        return abs(pow((pow((x - 0.5),2) + pow((y - 0.5),2)),2) - 2*(pow((x - 0.5),2) - pow((y - 0.5),2)));
+    else if (function=="6")
+        return abs(exp(-sin((x - 0.5))) + exp(- cos((y - 0.5))));
+    return abs((x - 0.5) * (y - 0.5)) + pow((x - 0.5), 2) - pow((y - 0.5), 2);
 }
 
-inline double modGradf0(double x, double y)
+
+inline double calculateGradientNorm(double (*evaluateExpressionf0)(double, double, const string&), double x, double y, const string& function)
 {
-    double sigma = 0.25;
-    double A = 1.0;
+    const double h = 0.0001;
+    double dx = (evaluateExpressionf0(x + h, y, function) - evaluateExpressionf0(x - h, y, function)) / (2 * h);
+    double dy = (evaluateExpressionf0(x, y + h, function) - evaluateExpressionf0(x, y - h, function)) / (2 * h);
+    double gradientNorm = sqrt(pow(dx, 2) + pow(dy, 2));
 
-    double centerPoints[5][2] = {{0.5, 0.5}, {0.0, 0.0}, {0.0, 1.0}, {1.0, 1.0}, {1.0, 0.0}};
-
-    double dx = 0.0;
-    double dy = 0.0;
-
-    for (int i = 0; i < 1; i++) {
-        double centerX = centerPoints[i][0];
-        double centerY = centerPoints[i][1];
-
-        double exponent = -((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY)) / (2 * sigma * sigma);
-        double gaussian = A * exp(exponent);
-
-        dx += -(x - centerX) * gaussian / (sigma * sigma);
-        dy += -(y - centerY) * gaussian / (sigma * sigma);
-
-        }
-    return sqrt(dx*dx +dy*dy);
+    return gradientNorm;
 }
-// il vertice è formato da due punti nel piano: x e y
+
+inline double doubleIntegral(const string& function)
+{
+    if (function=="1")
+        return 0.166666666666666666666667;
+    else if (function=="2")
+        return 0.325074061272133137721177;
+    else if (function=="3")
+        return 1.689028628265322081529132;
+    else if (function=="4")
+        return 0.357776000000000000000000;
+    else if (function=="5")
+        return 0.172651000000000000000000;
+    else if (function=="6")
+        return 1.423690000000000000000000;
+    return 0.062500000000000000000000;
+}
 struct Vertex
 {
     double x;
@@ -107,6 +121,8 @@ class Triangle
 {
 private:
 public:
+    static string mode;
+    static string function;
     bool active = true;
     double area;
     unsigned int id;
@@ -132,7 +148,7 @@ public:
                    vertices[2].x*(vertices[0].y-vertices[1].y)) / 2;
         center.x = (vertices[0].x + vertices[1].x + vertices[2].x)/3;
         center.y = (vertices[0].y + vertices[1].y + vertices[2].y)/3;
-        gradValue = modGradf0(center.x, center.y);
+        gradValue=calculateGradientNorm(evaluateExpressionf0, center.x, center.y, function);
     }
 
     Triangle():
@@ -146,26 +162,27 @@ public:
                    vertices[2].x*(vertices[0].y-vertices[1].y)) / 2;
         center.x = (vertices[0].x + vertices[1].x + vertices[2].x)/3;
         center.y = (vertices[0].y + vertices[1].y + vertices[2].y)/3;
-        gradValue = modGradf0(center.x, center.y);
+        gradValue=calculateGradientNorm(evaluateExpressionf0, center.x, center.y, function);
     }
     static constexpr double geometricTol = 1.0e-12;
     // INSERIRE NELLE FORMULE LA TOLLERANZA GEOMETRICA
     // quando confronto due triangoli, uno è maggiore dell'altro in base alle loro aree
-
-
-//    {
-//        inline bool operator>(const Triangle& other)
-//        {return area > other.area;}
-
-//        inline bool operator<(const Triangle& other)
-//        {return area < other.area;}
-//    }
-
     inline bool operator>(const Triangle& other)
-    {return (0.0001*gradValue+area) > (0.0001*(other.gradValue)+other.area);}
+    {
+        if (mode=="1")
+            return (area) > (other.area);
+        else
+            return (0.0001*gradValue+area) > (0.0001*(other.gradValue)+other.area);
+    }
 
     inline bool operator<(const Triangle& other)
-    {return (0.0001*gradValue+area) < (0.0001*(other.gradValue)+other.area);}
+    {
+        if (mode=="1")
+            return (area) < (other.area);
+        else
+            return (0.0001*gradValue+area) < (0.0001*(other.gradValue)+other.area);
+    }
+
 
 
     inline bool operator==(const Triangle& other)
@@ -183,12 +200,12 @@ public:
     {
         center.x = (vertices[0].x + vertices[1].x + vertices[2].x)/3;
         center.y = (vertices[0].y + vertices[1].y + vertices[2].y)/3;
-        gradValue = modGradf0(center.x, center.y);
+        gradValue=calculateGradientNorm(evaluateExpressionf0, center.x, center.y, function);
     }
 };
 
 //sfrutto l'algortimo di quicksort per ordinare i triangoli in base alla loro area
-void Refine(vector<Triangle>& triangles, vector<Edge>& edges, vector<Vertex>& vertices, unsigned int &n, string &test);
+void Refine(vector<Triangle>& triangles, vector<Edge>& edges, vector<Vertex>& vertices, unsigned int &n, double &area, double& exactarea);
 //importa i vertici della mesh triangolare
 bool ImportCell0Ds(vector<Vertex>& vertices, unsigned int n, string& test);
 //importa i lati della mesh triangolare
@@ -224,12 +241,12 @@ inline Vertex getOppositeVertex(Triangle &triangle, Edge &edge)
 }
 //divido triangolo in 2
 void split2(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &vertices, unsigned int m,
-            deque<unsigned int> &tempId, unsigned int &k, bool &permissible, deque<unsigned int> &tempId1);
+            deque<unsigned int> &tempId, unsigned int &k, bool &permissible, deque<unsigned int> &tempId1, double &area);
 //divido i triangoli successivi in 3 sottotriangoli
 void split3(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &vertices,
-            deque<unsigned int> &tempId, unsigned int &k, bool &permissible, deque<unsigned int> &tempId1);
+            deque<unsigned int> &tempId, unsigned int &k, bool &permissible, deque<unsigned int> &tempId1, double &area);
 void split2again (vector<Triangle> &triangles, vector<Edge> &edges,
-                 vector<Vertex> &vertices, unsigned int &k, bool &permissible, deque<unsigned int> &tempId1);
+                 vector<Vertex> &vertices, unsigned int &k, bool &permissible, deque<unsigned int> &tempId1, double &area);
 template <typename T>
 inline void Pushback(vector<T> &edges, T &edge)
 {
@@ -238,7 +255,8 @@ inline void Pushback(vector<T> &edges, T &edge)
 template <typename T>
 inline void Erase(vector<T> &triangles, unsigned int index)
 {
-    if (index < triangles.size()) {
+    if (index < triangles.size())
+    {
         triangles.erase(triangles.begin() + index);
     }
 }
@@ -246,7 +264,8 @@ inline unsigned int massimoElementoAttivo(vector<Triangle> &vettore)
 {
     Triangle massimo;
     massimo.area = 0;
-    for (Triangle &elemento : vettore) {
+    for (Triangle &elemento : vettore)
+    {
         if (elemento.active) { // Verifica se l'elemento è attivo
             if (elemento > massimo)
                 massimo = elemento;
@@ -254,13 +273,14 @@ inline unsigned int massimoElementoAttivo(vector<Triangle> &vettore)
     }
     return massimo.id;
 }
-inline Vertex set_mid(Edge &edge) {
+inline Vertex set_mid(Edge &edge)
+{
     Vertex mid;
     mid.x = (edge.finish.x + edge.start.x) / 2;
     mid.y = (edge.finish.y + edge.start.y) / 2;
     return mid; // Assegnare id e aggiornare vettore di vertici
 }
+
 }
 
 #endif // __EMPTY_H
-
