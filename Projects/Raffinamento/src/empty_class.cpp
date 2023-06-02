@@ -302,32 +302,72 @@ void Refine(vector<Triangle> &triangles, vector<Edge> &edges,
 {
     static constexpr double geometricTol = 1.0e-5;
     unsigned int h=0;
-    while((area+geometricTol)<exactarea)
+    //inserisco una condizione per decidere come fermare il ciclo while: in base al numero di iterazioni o alla convergenza all'itntegrale
+    bool condition;
+    if(n==0)
+        condition = true;
+    else
+        condition = false;
+    // caso convergenza integrale
+    if(condition)
     {
-        h++;
-        bool permissible = false;
-        unsigned int m = massimoElementoAttivo(triangles);
-        deque<unsigned int> tempId;  // Salvo gli ultimi 2 lati più lunghi
-        deque<unsigned int> tempId1; // Salvo gli id dei nuovi lati spezzati
-        unsigned int k = 0;          // K-esimo triangolo da raffinare
-        split2(triangles, edges, vertices, m, tempId, k, permissible, tempId1, area);
-        while (!permissible)
+        while((area+geometricTol)<exactarea)
         {
-            // l'insertionSort è l'algoritmo più efficiente nel caso di vettori di
-            // dimensioni molto piccole, come questo
-            insertionSort(triangles[k].edges);
-            if (triangles[k].edges[0].id == tempId.back())
+            h++;
+            bool permissible = false;
+            unsigned int m = massimoElementoAttivo(triangles);
+            deque<unsigned int> tempId;  // Salvo gli ultimi 2 lati più lunghi
+            deque<unsigned int> tempId1; // Salvo gli id dei nuovi lati spezzati
+            unsigned int k = 0;          // K-esimo triangolo da raffinare
+            split2(triangles, edges, vertices, m, tempId, k, permissible, tempId1, area);
+            while (!permissible)
             {
-                split2again(triangles, edges, vertices, k, permissible, tempId1,tempId, area);
-                permissible = true;
-            }
-            else
-            {
-                split3(triangles, edges, vertices, tempId, k, permissible, tempId1, area);
+                // l'insertionSort è l'algoritmo più efficiente nel caso di vettori di
+                // dimensioni molto piccole, come questo
+                insertionSort(triangles[k].edges);
+                if (triangles[k].edges[0].id == tempId.back())
+                {
+                    split2again(triangles, edges, vertices, k, permissible, tempId1,tempId, area);
+                    permissible = true;
+                }
+                else
+                {
+                    split3(triangles, edges, vertices, tempId, k, permissible, tempId1, area);
+                }
             }
         }
     }
-    cout<<h<<endl;
+
+    else
+    {
+        while(h < n)   // caso semplice numero di iterazioni
+        {
+            h++;
+            bool permissible = false;
+            unsigned int m = massimoElementoAttivo(triangles);
+            deque<unsigned int> tempId;  // Salvo gli ultimi 2 lati più lunghi
+            deque<unsigned int> tempId1; // Salvo gli id dei nuovi lati spezzati
+            unsigned int k = 0;          // K-esimo triangolo da raffinare
+            split2(triangles, edges, vertices, m, tempId, k, permissible, tempId1, area);
+            while (!permissible)
+            {
+                // l'insertionSort è l'algoritmo più efficiente nel caso di vettori di
+                // dimensioni molto piccole, come questo
+                insertionSort(triangles[k].edges);
+                if (triangles[k].edges[0].id == tempId.back())
+                {
+                    split2again(triangles, edges, vertices, k, permissible, tempId1,tempId, area);
+                    permissible = true;
+                }
+                else
+                {
+                    split3(triangles, edges, vertices, tempId, k, permissible, tempId1, area);
+                }
+            }
+        }
+    }
+
+    cout<<"Numero di iterazioni: " << h<<endl;
 }
 // assegno a ogni triangolo le sue proprietà chiamando le seguenti tre funzioni
 bool ImportCell0Ds(vector<Vertex> &vertices, unsigned int n, string &test)

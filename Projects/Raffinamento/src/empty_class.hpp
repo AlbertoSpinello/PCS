@@ -6,6 +6,7 @@
 #include <queue>
 #include <set>
 #include <vector>
+#include <string>
 
 using namespace std;
 using namespace Eigen;
@@ -26,8 +27,8 @@ inline double evaluateExpressionf0(double x, double y, const string& function)
     else if (function=="6")
         return abs(exp(-sin((x - 0.5))) + exp(- cos((y - 0.5))));
     return abs((x - 0.5) * (y - 0.5)) + pow((x - 0.5), 2) - pow((y - 0.5), 2);
-}
 
+}
 
 inline double calculateGradientNorm(double (*evaluateExpressionf0)(double, double, const string&), double x, double y, const string& function)
 {
@@ -41,6 +42,7 @@ inline double calculateGradientNorm(double (*evaluateExpressionf0)(double, doubl
 
 inline double doubleIntegral(const string& function)
 {
+
     if (function=="1")
         return 0.166666666666666666666667;
     else if (function=="2")
@@ -54,6 +56,7 @@ inline double doubleIntegral(const string& function)
     else if (function=="6")
         return 1.423690000000000000000000;
     return 0.062500000000000000000000;
+
 }
 struct Vertex
 {
