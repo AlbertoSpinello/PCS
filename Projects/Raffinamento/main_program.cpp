@@ -17,7 +17,7 @@ int main(int argc, char **argv)
     vector<Vertex> ciro;
     vector<Edge> marco;
     vector<Triangle> cosimo;
-    unsigned int n = 10000;
+    unsigned int n = stoul(argv[4]);
     ImportCell0Ds(ciro, n, test);
     ImportCell1Ds(marco, ciro, n, test);
     ImportCell2Ds(cosimo, marco, ciro, n, test);
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     double area=0.0;
     for (unsigned int i=0; i<cosimo.size(); i++)
     {
-        area+=abs((cosimo[i].area*evaluateExpressionf0(cosimo[i].center.x,cosimo[i].center.y, cosimo[i].function)));
+        area+=(cosimo[i].area*evaluateExpressionf0(cosimo[i].center.x,cosimo[i].center.y, cosimo[i].function));
     }
     Refine(cosimo, marco, ciro, n, area, exactarea);
     ofstream outputFile("C:/Users/Gentian/Downloads/outputPunti.csv");

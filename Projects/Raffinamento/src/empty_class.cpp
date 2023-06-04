@@ -1,14 +1,15 @@
 #include "empty_class.hpp"
 #include <queue>
 
-namespace ProjectLibrary {
+namespace ProjectLibrary
+{
 
 string ProjectLibrary::Triangle::mode;
 string ProjectLibrary::Triangle::function;
 
 void split2(vector<Triangle> &triangles, vector<Edge> &edges,
-            vector<Vertex> &vertices, unsigned int m,
-            deque<unsigned int> &tempId, unsigned int &k, bool &permissible, deque<unsigned int> &tempId1, double &area)
+            vector<Vertex> &vertices, unsigned int m, deque<unsigned int> &tempId,
+            unsigned int &k, bool &permissible, deque<unsigned int> &tempId1, double &area)
 {
     insertionSort(triangles[m].edges); // Sistemo i lati in ordine crescente
     tempId.push_back(triangles[m].edges[0].id); // Aggiungo nuovo lato lungo
@@ -99,9 +100,9 @@ void split2(vector<Triangle> &triangles, vector<Edge> &edges,
     tempId1.push_back(newTriangle2.id);
     // disattivo il lato spezzato
     edges[tempId.front()].active = false;
-    area-=abs((triangles[m].area*evaluateExpressionf0(triangles[m].center.x,triangles[m].center.y, triangles[m].function)));
-    area+=abs((newTriangle1.area*evaluateExpressionf0(newTriangle1.center.x,newTriangle1.center.y, newTriangle1.function)));
-    area+=abs((newTriangle2.area*evaluateExpressionf0(newTriangle2.center.x,newTriangle2.center.y, newTriangle2.function)));
+    area-=(triangles[m].area*evaluateExpressionf0(triangles[m].center.x,triangles[m].center.y, triangles[m].function));
+    area+=(newTriangle1.area*evaluateExpressionf0(newTriangle1.center.x,newTriangle1.center.y, newTriangle1.function));
+    area+=(newTriangle2.area*evaluateExpressionf0(newTriangle2.center.x,newTriangle2.center.y, newTriangle2.function));
 }
 
 void split2again(vector<Triangle> &triangles, vector<Edge> &edges,
@@ -116,12 +117,14 @@ void split2again(vector<Triangle> &triangles, vector<Edge> &edges,
     bool flag = false;
     if (triangles[k].edges[1].start == triangles[k].edges[0].start ||triangles[k].edges[1].finish ==triangles[k].edges[0].start) // Lato sinistro con edge1 o con edge2
     {
-        EdgesV1 = {newEdge, triangles[tempId.back()].edges[1],triangles[k].edges[2]}; // Creo nuovi triangoli con i lati giusti
-        EdgesV2 = {newEdge, triangles[tempId.front()].edges[1],triangles[k].edges[1]};
+        EdgesV1 = {newEdge, triangles[tempId1.back()].edges[1],triangles[k].edges[2]}; // Creo nuovi triangoli con i lati giusti
+        EdgesV2 = {newEdge, triangles[tempId1.front()].edges[1],triangles[k].edges[1]};
         flag = true;
-    } else {
-        EdgesV1 = {newEdge, triangles[tempId.back()].edges[1],triangles[k].edges[1]}; // Creo nuovi triangoli con i lati giusti
-        EdgesV2 = {newEdge, triangles[tempId.front()].edges[1],triangles[k].edges[2]};
+    }
+    else
+    {
+        EdgesV1 = {newEdge, triangles[tempId1.back()].edges[1],triangles[k].edges[1]}; // Creo nuovi triangoli con i lati giusti
+        EdgesV2 = {newEdge, triangles[tempId1.front()].edges[1],triangles[k].edges[2]};
     }
     Triangle newTriangle(EdgesV1, triangles.size());
     Triangle newTriangle0(EdgesV2, triangles.size() + 1);
@@ -173,18 +176,18 @@ void split2again(vector<Triangle> &triangles, vector<Edge> &edges,
     Pushback(newTriangle0.edges[0].adjTriangles, newTriangle.id);
     // riaggiorno le adiacenze dei lati dei nuovi triangoli creati rispetto a lati
     // spezzati in split2 (penultimo triangolo spezzato)
-    Pushback(newTriangle.edges[1].adjTriangles, triangles[tempId.back()].id);
-    Pushback(triangles[tempId.back()].edges[1].adjTriangles, newTriangle.id);
-    Pushback(newTriangle0.edges[1].adjTriangles, triangles[tempId.front()].id);
-    Pushback(triangles[tempId.front()].edges[1].adjTriangles, newTriangle0.id);
+    Pushback(newTriangle.edges[1].adjTriangles, triangles[tempId1.back()].id);
+    Pushback(triangles[tempId1.back()].edges[1].adjTriangles, newTriangle.id);
+    Pushback(newTriangle0.edges[1].adjTriangles, triangles[tempId1.front()].id);
+    Pushback(triangles[tempId1.front()].edges[1].adjTriangles, newTriangle0.id);
     // Inserisco i triangoli nella lista
     Pushback(triangles, newTriangle);
     Pushback(triangles, newTriangle0);
-    edges[tempId1.front()].active = false;
+    edges[tempId.front()].active = false;
     permissible = true;
-    area-=abs((triangles[k].area*evaluateExpressionf0(triangles[k].center.x,triangles[k].center.y, triangles[k].function)));
-    area+=abs((newTriangle.area*evaluateExpressionf0(newTriangle.center.x,newTriangle.center.y, newTriangle.function)));
-    area+=abs((newTriangle0.area*evaluateExpressionf0(newTriangle0.center.x,newTriangle0.center.y, newTriangle0.function)));
+    area-=(triangles[k].area*evaluateExpressionf0(triangles[k].center.x,triangles[k].center.y, triangles[k].function));
+    area+=(newTriangle.area*evaluateExpressionf0(newTriangle.center.x,newTriangle.center.y, newTriangle.function));
+    area+=(newTriangle0.area*evaluateExpressionf0(newTriangle0.center.x,newTriangle0.center.y, newTriangle0.function));
 
 }
 void split3(vector<Triangle> &triangles, vector<Edge> &edges,
@@ -302,7 +305,7 @@ void Refine(vector<Triangle> &triangles, vector<Edge> &edges,
 {
     static constexpr double geometricTol = 1.0e-5;
     unsigned int h=0;
-    while((area+geometricTol)<exactarea)
+    while((area+geometricTol)<exactarea && h<n)
     {
         h++;
         bool permissible = false;
@@ -318,7 +321,7 @@ void Refine(vector<Triangle> &triangles, vector<Edge> &edges,
             insertionSort(triangles[k].edges);
             if (triangles[k].edges[0].id == tempId.back())
             {
-                split2again(triangles, edges, vertices, k, permissible, tempId1,tempId, area);
+                split2again(triangles, edges, vertices, k, permissible, tempId,tempId1, area);
                 permissible = true;
             }
             else

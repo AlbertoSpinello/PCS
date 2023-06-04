@@ -6,6 +6,8 @@
 #include <queue>
 #include <set>
 #include <vector>
+#include <string>
+#include <cmath>
 
 using namespace std;
 using namespace Eigen;
@@ -16,16 +18,12 @@ inline double evaluateExpressionf0(double x, double y, const string& function)
     if (function=="1")
         return abs(pow((x-0.5),(2)) + pow((y-0.5),(2)));
     else if (function=="2")
-        return abs(sin(x - 0.5) + sin(y - 0.5));
+        return abs(exp(-(pow(x - 0.5, 2) + pow(y - 0.5, 2)) / (2.0 * pow(0.1, 2))));
     else if (function=="3")
-        return abs(sqrt(abs(6 * (x - 0.5)) + abs(6 * (y - 0.5))));
+        return abs(sqrt(pow(x - 0.5, 2) + pow(y - 0.5, 2)) - 0.25);
     else if (function=="4")
-        return abs(exp(-(((x - 0.5) * (x - 0.5)) / 0.125 + ((y - 0.5) * (y - 0.5)) / 0.125)));
-    else if (function=="5")
         return abs(pow((pow((x - 0.5),2) + pow((y - 0.5),2)),2) - 2*(pow((x - 0.5),2) - pow((y - 0.5),2)));
-    else if (function=="6")
-        return abs(exp(-sin((x - 0.5))) + exp(- cos((y - 0.5))));
-    return abs((x - 0.5) * (y - 0.5)) + pow((x - 0.5), 2) - pow((y - 0.5), 2);
+    return abs(sin(x) - cos(y));
 }
 
 
@@ -35,25 +33,20 @@ inline double calculateGradientNorm(double (*evaluateExpressionf0)(double, doubl
     double dx = (evaluateExpressionf0(x + h, y, function) - evaluateExpressionf0(x - h, y, function)) / (2 * h);
     double dy = (evaluateExpressionf0(x, y + h, function) - evaluateExpressionf0(x, y - h, function)) / (2 * h);
     double gradientNorm = sqrt(pow(dx, 2) + pow(dy, 2));
-
     return gradientNorm;
 }
 
 inline double doubleIntegral(const string& function)
 {
     if (function=="1")
-        return 0.166666666666666666666667;
+        return 0.1666666666667;
     else if (function=="2")
-        return 0.325074061272133137721177;
+        return 0.06285178;
     else if (function=="3")
-        return 1.689028628265322081529132;
+        return 0.1653230000000;
     else if (function=="4")
-        return 0.357776000000000000000000;
-    else if (function=="5")
-        return 0.172651000000000000000000;
-    else if (function=="6")
-        return 1.423690000000000000000000;
-    return 0.062500000000000000000000;
+        return 0.1726510000000;
+    return 0.4003236626453;
 }
 struct Vertex
 {
@@ -72,9 +65,9 @@ struct Vertex
     {return id > other.id;}
     inline bool operator<(const Vertex& other) const
     {return id < other.id;}
-    inline bool operator==(const Vertex& other)
+    inline bool operator==(const Vertex& other) const
     {return id == other.id;}
-    inline bool operator!=(const Vertex& other)
+    inline bool operator!=(const Vertex& other) const
     {return !(id == other.id);}
 
 };
@@ -104,10 +97,10 @@ struct Edge
     static constexpr double geometricTol = 1.0e-12;
 
     inline bool operator>(const Edge& other)
-    {return length > other.length;}
+    {return length-geometricTol > other.length;}
 
     inline bool operator<(const Edge& other)
-    {return length < other.length;}
+    {return length+geometricTol < other.length;}
 
     inline bool operator==(const Edge& other)
     {return id == other.id;}
@@ -136,11 +129,10 @@ public:
         set<Vertex> tempVertS;
         tempVertS.insert(edges[0].start);
         tempVertS.insert(edges[0].finish);
-        if ((edges[1].start) != (edges[0].start) &&
-            (edges[1].start) != (edges[0].finish))
-            tempVertS.insert(edges[1].start);
-        else
-            tempVertS.insert(edges[1].finish);
+        tempVertS.insert(edges[1].start);
+        tempVertS.insert(edges[1].finish);
+        tempVertS.insert(edges[2].start);
+        tempVertS.insert(edges[2].finish);
         vector<Vertex> tempVertV(tempVertS.begin(), tempVertS.end());  //creo il vettore a partire dal set di punti
         vertices = tempVertV;
         area = abs(vertices[0].x*(vertices[1].y-vertices[2].y) +
@@ -170,17 +162,17 @@ public:
     inline bool operator>(const Triangle& other)
     {
         if (mode=="1")
-            return (area) > (other.area);
+            return (area-geometricTol) > (other.area);
         else
-            return (0.0001*gradValue+area) > (0.0001*(other.gradValue)+other.area);
+            return (0.0001*gradValue+area-geometricTol) > (0.0001*(other.gradValue)+other.area);
     }
 
     inline bool operator<(const Triangle& other)
     {
         if (mode=="1")
-            return (area) < (other.area);
+            return (area+geometricTol) < (other.area);
         else
-            return (0.0001*gradValue+area) < (0.0001*(other.gradValue)+other.area);
+            return (0.0001*gradValue+area+geometricTol) < (0.0001*(other.gradValue)+other.area);
     }
 
 
@@ -245,8 +237,8 @@ void split2(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &ve
 //divido i triangoli successivi in 3 sottotriangoli
 void split3(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &vertices,
             deque<unsigned int> &tempId, unsigned int &k, bool &permissible, deque<unsigned int> &tempId1, double &area);
-void split2again (vector<Triangle> &triangles, vector<Edge> &edges,
-                 vector<Vertex> &vertices, unsigned int &k, bool &permissible, deque<unsigned int> &tempId1, double &area);
+void split2again (vector<Triangle> &triangles, vector<Edge> &edges,vector<Vertex> &vertices,
+                 unsigned int &k, bool &permissible, deque<unsigned int> &tempId, deque<unsigned int> &tempId1, double &area);
 template <typename T>
 inline void Pushback(vector<T> &edges, T &edge)
 {
