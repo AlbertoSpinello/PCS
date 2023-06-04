@@ -482,5 +482,4 @@ bool ImportCell2Ds(vector<Triangle> &triangles, vector<Edge> &edges,
     file.close();
     return true;
 }
-// ***************************************************************************
-} // namespace ProjectLibrary
+}

@@ -2,6 +2,11 @@
 #include <chrono>
 using namespace std;
 using namespace ProjectLibrary;
+// Il seguente programma raffina una mesh triangolare, sono da inserire 2 oppure 3 input sotto command line argument
+// separati da uno spazio. Il primo valore può essere 1 oppure 2 ed è il dataset che si utilizzerà. Il secondo valore
+// è 1 oppure 2 ed è la modalità di raffinamento: in base all'area oppure in base al gradiente di una funzione a scelta.
+// Nel caso si utilizzi la modalità 2, è necessario inserire un numero che sarà il numero della funzione che utilizzeremo
+// per il calcolo dell'integrale sotteso.
 int main(int argc, char **argv)
 {
     if (argc < 3)
