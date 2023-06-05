@@ -10,13 +10,23 @@ using namespace ProjectLibrary;
 // per il calcolo dell'integrale sotteso.
 int main(int argc, char **argv)
 {
-    if (argc < 3)
+    if (argc < 2)
     {
-        cerr << "Test number and mode shall be passed to the program" << endl;
+        cerr << "Test number shall be passed to the program" << endl;
         return -1;
     }
     string test = argv[1];
+    if (argc < 2)
+    {
+        cerr << "Mode type shall be passed to the program" << endl;
+        return -1;
+    }
     Triangle::mode = argv[2];
+    if (argc < 2)
+    {
+        cerr << "Function number shall be passed to the program" << endl;
+        return -1;
+    }
     Triangle::function = argv[3];
     string function1=argv[3];
     auto start = chrono::high_resolution_clock::now();
