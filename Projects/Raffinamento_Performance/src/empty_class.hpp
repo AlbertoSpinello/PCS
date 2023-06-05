@@ -148,7 +148,7 @@ inline void Pushback(vector<T> &edges, T &edge)
 inline void insertionSort(vector<Edge> &edge)
 {
     unsigned int n= edge.size();
-    for (int i = 0; i < n; i++)
+    for (unsigned int i = 0; i < n; i++)
     {
         Edge key = edge[i];
         int j = i - 1;
@@ -169,7 +169,7 @@ inline void Erase(vector<T> &triangles, unsigned int index)
     }
 }
 
-inline unsigned int massimoElementoAttivo(vector<Triangle> &vettore)
+inline void massimoElementoAttivo(vector<Triangle> &vettore, unsigned int& m)
 {
     Triangle massimo;
     massimo.area = 0;
@@ -180,8 +180,10 @@ inline unsigned int massimoElementoAttivo(vector<Triangle> &vettore)
             if (elemento > massimo)
                 massimo = elemento;
         }
+        if (vettore[m].area-massimo.area< 1.0e-12)
+            break;
     }
-    return massimo.id;
+    m=massimo.id;
 }
 inline Vertex getOppositeVertex(Triangle &triangle, Edge &edge)
 {
