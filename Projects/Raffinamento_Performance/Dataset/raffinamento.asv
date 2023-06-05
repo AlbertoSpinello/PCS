@@ -1,0 +1,16 @@
+% Contenitore dei lati del triangolo
+triangolo
+% Tracciamento dei lati del triangolo
+hold on  % Per sovrapporre i grafici
+for i = 1:numel(triangoli)
+    lato = triangoli{i};
+    plot(lato(:,1), lato(:,2), 'o-');
+end
+hold off
+
+% Aggiunta di etichette agli assi
+xlabel('X');
+ylabel('Y');
+
+% Aggiunta di un titolo al grafico
+title('Triangolo');
