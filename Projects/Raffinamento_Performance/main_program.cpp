@@ -1,7 +1,7 @@
 #include "empty_class.hpp"
 #include <chrono>
 using namespace std;
-
+using namespace ProjectLibrary;
 int main(int argc, char** argv)
 {
     if (argc < 2)
@@ -11,9 +11,9 @@ int main(int argc, char** argv)
     }
     string test = argv[1];
     auto start = chrono::high_resolution_clock::now();
-    vector<ProjectLibrary::Vertex> ciro;
-    vector<ProjectLibrary::Edge> marco;
-    vector<ProjectLibrary::Triangle> cosimo;
+    vector<Vertex> ciro;
+    vector<Edge> marco;
+    vector<Triangle> cosimo;
     if (argc < 3)
     {
         cerr<< "Number of iterations shall be passed to the program"<< endl;
@@ -23,15 +23,15 @@ int main(int argc, char** argv)
     ImportCell0Ds(ciro, n, test);
     ImportCell1Ds(marco, ciro, n, test);
     ImportCell2Ds(cosimo, marco, ciro, n, test);
-    ProjectLibrary::Refine(cosimo, marco, ciro, n, test);
-    ofstream outputFile("C:/Users/Alberto/Dropbox (Politecnico Di Torino Studenti)/PC/Desktop/foto_progetto/outputPunti.csv");
+    ProjectLibrary::Refine(cosimo, marco, ciro, n);
+    ofstream outputFile("C:/Users/Gentian/Downloads/outputPunti.csv");
     for (unsigned int i=0; i<ciro.size(); i++)
     {
         outputFile<<ciro[i].x<<";"<<ciro[i].y<<"\n";
     }
     outputFile.close();
 
-    ofstream outputFile1("C:/Users/Alberto/Dropbox (Politecnico Di Torino Studenti)/PC/Desktop/foto_progetto/outputLati.csv");
+    ofstream outputFile1("C:/Users/Gentian/Downloads/outputLati.csv");
     for (unsigned int i=0; i<marco.size(); i++)
     {
         if (marco[i].active)

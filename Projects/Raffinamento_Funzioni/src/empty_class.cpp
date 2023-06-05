@@ -1,14 +1,14 @@
 #include "empty_class.hpp"
 #include <queue>
 
-namespace ProjectLibrary {
+namespace ProjectLibrary
+{
 
 string ProjectLibrary::Triangle::mode;
 string ProjectLibrary::Triangle::function;
 
-void split2(vector<Triangle> &triangles, vector<Edge> &edges,
-            vector<Vertex> &vertices, unsigned int m,
-            deque<unsigned int> &tempId, unsigned int &k, bool &permissible, deque<unsigned int> &tempId1, double &area)
+void split2(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &vertices, unsigned int m, deque<unsigned int> &tempId,
+            unsigned int &k, bool &permissible, deque<unsigned int> &tempId1, double &area)
 {
     insertionSort(triangles[m].edges); // Sistemo i lati in ordine crescente
     tempId.push_back(triangles[m].edges[0].id); // Aggiungo nuovo lato lungo
@@ -56,7 +56,8 @@ void split2(vector<Triangle> &triangles, vector<Edge> &edges,
         for (unsigned int j = 0; j < 3; j++)
         {
             if (triangles[triangles[m].edges[1].adjTriangles[0]].edges[j].adjTriangles.size() > 0 &&
-                triangles[triangles[m].edges[1].adjTriangles[0]].edges[j].adjTriangles[0] == triangles[m].id) {
+                triangles[triangles[m].edges[1].adjTriangles[0]].edges[j].adjTriangles[0] == triangles[m].id)
+            {
                 if (flag)
                 {
                     triangles[triangles[m].edges[1].adjTriangles[0]].edges[j].adjTriangles[0] = newTriangle1.id;
@@ -70,11 +71,13 @@ void split2(vector<Triangle> &triangles, vector<Edge> &edges,
             }
         }
     }
-    if (triangles[m].edges[2].adjTriangles.size() > 0) {
+    if (triangles[m].edges[2].adjTriangles.size() > 0)
+    {
         for (unsigned int j = 0; j < 3; j++)
         {
             if (triangles[triangles[m].edges[2].adjTriangles[0]].edges[j].adjTriangles.size() > 0 &&
-                triangles[triangles[m].edges[2].adjTriangles[0]].edges[j].adjTriangles[0] == triangles[m].id) {
+                triangles[triangles[m].edges[2].adjTriangles[0]].edges[j].adjTriangles[0] == triangles[m].id)
+            {
                 if (flag)
                 {
                     triangles[triangles[m].edges[2].adjTriangles[0]].edges[j].adjTriangles[0] = newTriangle2.id;
@@ -97,11 +100,9 @@ void split2(vector<Triangle> &triangles, vector<Edge> &edges,
     // aggiorno l'id dei due nuovi triangoli creati
     tempId1.push_back(newTriangle1.id);
     tempId1.push_back(newTriangle2.id);
-    // disattivo il lato spezzato
-    edges[tempId.front()].active = false;
-    area-=abs((triangles[m].area*evaluateExpressionf0(triangles[m].center.x,triangles[m].center.y, triangles[m].function)));
-    area+=abs((newTriangle1.area*evaluateExpressionf0(newTriangle1.center.x,newTriangle1.center.y, newTriangle1.function)));
-    area+=abs((newTriangle2.area*evaluateExpressionf0(newTriangle2.center.x,newTriangle2.center.y, newTriangle2.function)));
+    area-=(triangles[m].area*evaluateExpressionf0(triangles[m].center.x,triangles[m].center.y, triangles[m].function));
+    area+=(newTriangle1.area*evaluateExpressionf0(newTriangle1.center.x,newTriangle1.center.y, newTriangle1.function));
+    area+=(newTriangle2.area*evaluateExpressionf0(newTriangle2.center.x,newTriangle2.center.y, newTriangle2.function));
 }
 
 void split2again(vector<Triangle> &triangles, vector<Edge> &edges,
@@ -116,12 +117,14 @@ void split2again(vector<Triangle> &triangles, vector<Edge> &edges,
     bool flag = false;
     if (triangles[k].edges[1].start == triangles[k].edges[0].start ||triangles[k].edges[1].finish ==triangles[k].edges[0].start) // Lato sinistro con edge1 o con edge2
     {
-        EdgesV1 = {newEdge, triangles[tempId.back()].edges[1],triangles[k].edges[2]}; // Creo nuovi triangoli con i lati giusti
-        EdgesV2 = {newEdge, triangles[tempId.front()].edges[1],triangles[k].edges[1]};
+        EdgesV1 = {newEdge, triangles[tempId1.back()].edges[1],triangles[k].edges[2]}; // Creo nuovi triangoli con i lati giusti
+        EdgesV2 = {newEdge, triangles[tempId1.front()].edges[1],triangles[k].edges[1]};
         flag = true;
-    } else {
-        EdgesV1 = {newEdge, triangles[tempId.back()].edges[1],triangles[k].edges[1]}; // Creo nuovi triangoli con i lati giusti
-        EdgesV2 = {newEdge, triangles[tempId.front()].edges[1],triangles[k].edges[2]};
+    }
+    else
+    {
+        EdgesV1 = {newEdge, triangles[tempId1.back()].edges[1],triangles[k].edges[1]}; // Creo nuovi triangoli con i lati giusti
+        EdgesV2 = {newEdge, triangles[tempId1.front()].edges[1],triangles[k].edges[2]};
     }
     Triangle newTriangle(EdgesV1, triangles.size());
     Triangle newTriangle0(EdgesV2, triangles.size() + 1);
@@ -134,7 +137,8 @@ void split2again(vector<Triangle> &triangles, vector<Edge> &edges,
         for (unsigned int j = 0; j < 3; j++)
         {
             if (triangles[triangles[k].edges[1].adjTriangles[0]].edges[j].adjTriangles.size() > 0 &&
-                triangles[triangles[k].edges[1].adjTriangles[0]].edges[j].adjTriangles[0] == triangles[k].id) {
+                triangles[triangles[k].edges[1].adjTriangles[0]].edges[j].adjTriangles[0] == triangles[k].id)
+            {
                 if (flag)
                 {
                     triangles[triangles[k].edges[1].adjTriangles[0]].edges[j].adjTriangles[0] = newTriangle0.id;
@@ -153,7 +157,8 @@ void split2again(vector<Triangle> &triangles, vector<Edge> &edges,
         for (unsigned int j = 0; j < 3; j++)
         {
             if (triangles[triangles[k].edges[2].adjTriangles[0]].edges[j].adjTriangles.size() > 0 &&
-                triangles[triangles[k].edges[2].adjTriangles[0]].edges[j].adjTriangles[0] == triangles[k].id) {
+                triangles[triangles[k].edges[2].adjTriangles[0]].edges[j].adjTriangles[0] == triangles[k].id)
+            {
                 if (flag)
                 {
                     triangles[triangles[k].edges[2].adjTriangles[0]].edges[j].adjTriangles[0] = newTriangle.id;
@@ -173,22 +178,21 @@ void split2again(vector<Triangle> &triangles, vector<Edge> &edges,
     Pushback(newTriangle0.edges[0].adjTriangles, newTriangle.id);
     // riaggiorno le adiacenze dei lati dei nuovi triangoli creati rispetto a lati
     // spezzati in split2 (penultimo triangolo spezzato)
-    Pushback(newTriangle.edges[1].adjTriangles, triangles[tempId.back()].id);
-    Pushback(triangles[tempId.back()].edges[1].adjTriangles, newTriangle.id);
-    Pushback(newTriangle0.edges[1].adjTriangles, triangles[tempId.front()].id);
-    Pushback(triangles[tempId.front()].edges[1].adjTriangles, newTriangle0.id);
+    Pushback(newTriangle.edges[1].adjTriangles, triangles[tempId1.back()].id);
+    Pushback(triangles[tempId1.back()].edges[1].adjTriangles, newTriangle.id);
+    Pushback(newTriangle0.edges[1].adjTriangles, triangles[tempId1.front()].id);
+    Pushback(triangles[tempId1.front()].edges[1].adjTriangles, newTriangle0.id);
     // Inserisco i triangoli nella lista
     Pushback(triangles, newTriangle);
     Pushback(triangles, newTriangle0);
-    edges[tempId1.front()].active = false;
+    edges[tempId.front()].active = false;
     permissible = true;
-    area-=abs((triangles[k].area*evaluateExpressionf0(triangles[k].center.x,triangles[k].center.y, triangles[k].function)));
-    area+=abs((newTriangle.area*evaluateExpressionf0(newTriangle.center.x,newTriangle.center.y, newTriangle.function)));
-    area+=abs((newTriangle0.area*evaluateExpressionf0(newTriangle0.center.x,newTriangle0.center.y, newTriangle0.function)));
+    area-=(triangles[k].area*evaluateExpressionf0(triangles[k].center.x,triangles[k].center.y, triangles[k].function));
+    area+=(newTriangle.area*evaluateExpressionf0(newTriangle.center.x,newTriangle.center.y, newTriangle.function));
+    area+=(newTriangle0.area*evaluateExpressionf0(newTriangle0.center.x,newTriangle0.center.y, newTriangle0.function));
 
 }
-void split3(vector<Triangle> &triangles, vector<Edge> &edges,
-            vector<Vertex> &vertices, deque<unsigned int> &tempId,
+void split3(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &vertices, deque<unsigned int> &tempId,
             unsigned int &k, bool &permissible, deque<unsigned int> &tempId1, double &area)
 {
     split2(triangles, edges, vertices, k, tempId, k, permissible,tempId1,area); // Divido prima il triangolo adiacente in 2
@@ -230,7 +234,8 @@ void split3(vector<Triangle> &triangles, vector<Edge> &edges,
         for (unsigned int j = 0; j < 3; j++)
         {
             if (triangles[triangles[z].edges[1].adjTriangles[0]].edges[j].adjTriangles.size() > 0 &&
-                triangles[triangles[z].edges[1].adjTriangles[0]].edges[j].adjTriangles[0] == triangles[z].id) {
+                triangles[triangles[z].edges[1].adjTriangles[0]].edges[j].adjTriangles[0] == triangles[z].id)
+            {
                 if (flag)
                 {
                     triangles[triangles[z].edges[1].adjTriangles[0]].edges[j].adjTriangles[0] = newTriangle3.id;
@@ -249,7 +254,8 @@ void split3(vector<Triangle> &triangles, vector<Edge> &edges,
         for (unsigned int j = 0; j < 3; j++)
         {
             if (triangles[triangles[z].edges[2].adjTriangles[0]].edges[j].adjTriangles.size() > 0 &&
-                triangles[triangles[z].edges[2].adjTriangles[0]].edges[j].adjTriangles[0] == triangles[z].id) {
+                triangles[triangles[z].edges[2].adjTriangles[0]].edges[j].adjTriangles[0] == triangles[z].id)
+            {
                 if (flag)
                 {
                     triangles[triangles[z].edges[2].adjTriangles[0]].edges[j].adjTriangles[0] = newTriangle4.id;
@@ -291,88 +297,46 @@ void split3(vector<Triangle> &triangles, vector<Edge> &edges,
     Pushback(triangles, newTriangle4);
     edges[tempId.front()].active = false;
     tempId.pop_front(); // Mi dimentico il vecchio lato lungo e vado avanti
-    area-=abs((triangles[z].area*evaluateExpressionf0(triangles[z].center.x,triangles[z].center.y, triangles[z].function)));
-    area+=abs((newTriangle3.area*evaluateExpressionf0(newTriangle3.center.x,newTriangle3.center.y, newTriangle3.function)));
-    area+=abs((newTriangle4.area*evaluateExpressionf0(newTriangle4.center.x,newTriangle4.center.y, newTriangle4.function)));
+    area-=(triangles[z].area*evaluateExpressionf0(triangles[z].center.x,triangles[z].center.y, triangles[z].function));
+    area+=(newTriangle3.area*evaluateExpressionf0(newTriangle3.center.x,newTriangle3.center.y, newTriangle3.function));
+    area+=(newTriangle4.area*evaluateExpressionf0(newTriangle4.center.x,newTriangle4.center.y, newTriangle4.function));
 }
 // raffina tutto l'array di triangoli, partendo da un vettore ordinato in base
 // all'area
-void Refine(vector<Triangle> &triangles, vector<Edge> &edges,
-            vector<Vertex> &vertices, unsigned int &n, double &area, double &exactarea)
+void Refine(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &vertices, unsigned int &n, double &area, double &exactarea)
 {
     static constexpr double geometricTol = 1.0e-5;
     unsigned int h=0;
-    //inserisco una condizione per decidere come fermare il ciclo while: in base al numero di iterazioni o alla convergenza all'itntegrale
-    bool condition;
-    if(n==0)
-        condition = true;
-    else
-        condition = false;
-    // caso convergenza integrale
-    if(condition)
+    while((area+geometricTol)<exactarea && h<n)
     {
-        while((area+geometricTol)<exactarea)
+        h++;
+        bool permissible = false;
+        unsigned int m = massimoElementoAttivo(triangles);
+        deque<unsigned int> tempId;  // Salvo gli ultimi 2 lati più lunghi
+        deque<unsigned int> tempId1; // Salvo gli id dei nuovi lati spezzati
+        unsigned int k = 0;          // K-esimo triangolo da raffinare
+        split2(triangles, edges, vertices, m, tempId, k, permissible, tempId1, area);
+        while (!permissible)
         {
-            h++;
-            bool permissible = false;
-            unsigned int m = massimoElementoAttivo(triangles);
-            deque<unsigned int> tempId;  // Salvo gli ultimi 2 lati più lunghi
-            deque<unsigned int> tempId1; // Salvo gli id dei nuovi lati spezzati
-            unsigned int k = 0;          // K-esimo triangolo da raffinare
-            split2(triangles, edges, vertices, m, tempId, k, permissible, tempId1, area);
-            while (!permissible)
+            // l'insertionSort è l'algoritmo più efficiente nel caso di vettori di
+            // dimensioni molto piccole, come questo
+            insertionSort(triangles[k].edges);
+            if (triangles[k].edges[0].id == tempId.back())
             {
-                // l'insertionSort è l'algoritmo più efficiente nel caso di vettori di
-                // dimensioni molto piccole, come questo
-                insertionSort(triangles[k].edges);
-                if (triangles[k].edges[0].id == tempId.back())
-                {
-                    split2again(triangles, edges, vertices, k, permissible, tempId1,tempId, area);
-                    permissible = true;
-                }
-                else
-                {
-                    split3(triangles, edges, vertices, tempId, k, permissible, tempId1, area);
-                }
+                split2again(triangles, edges, vertices, k, permissible, tempId,tempId1, area);
+                permissible = true;
+            }
+            else
+            {
+                split3(triangles, edges, vertices, tempId, k, permissible, tempId1, area);
             }
         }
     }
-
-    else
-    {
-        while(h < n)   // caso semplice numero di iterazioni
-        {
-            h++;
-            bool permissible = false;
-            unsigned int m = massimoElementoAttivo(triangles);
-            deque<unsigned int> tempId;  // Salvo gli ultimi 2 lati più lunghi
-            deque<unsigned int> tempId1; // Salvo gli id dei nuovi lati spezzati
-            unsigned int k = 0;          // K-esimo triangolo da raffinare
-            split2(triangles, edges, vertices, m, tempId, k, permissible, tempId1, area);
-            while (!permissible)
-            {
-                // l'insertionSort è l'algoritmo più efficiente nel caso di vettori di
-                // dimensioni molto piccole, come questo
-                insertionSort(triangles[k].edges);
-                if (triangles[k].edges[0].id == tempId.back())
-                {
-                    split2again(triangles, edges, vertices, k, permissible, tempId1,tempId, area);
-                    permissible = true;
-                }
-                else
-                {
-                    split3(triangles, edges, vertices, tempId, k, permissible, tempId1, area);
-                }
-            }
-        }
-    }
-
-    cout<<"Numero di iterazioni: " << h<<endl;
+    cout<<h<<endl;
 }
 // assegno a ogni triangolo le sue proprietà chiamando le seguenti tre funzioni
 bool ImportCell0Ds(vector<Vertex> &vertices, unsigned int n, string &test)
 {
-
     ifstream file;
     string inFile = "./Dataset/Test" + test + "/Cell0Ds.csv";
     file.open(inFile);
@@ -408,8 +372,7 @@ bool ImportCell0Ds(vector<Vertex> &vertices, unsigned int n, string &test)
     file.close();
     return true;
 }
-bool ImportCell1Ds(vector<Edge> &edges, vector<Vertex> &vertices,
-                   unsigned int n, string &test)
+bool ImportCell1Ds(vector<Edge> &edges, vector<Vertex> &vertices, unsigned int n, string &test)
 {
     ifstream file;
     string inFile = "./Dataset/Test" + test + "/Cell1Ds.csv";
@@ -450,8 +413,8 @@ bool ImportCell1Ds(vector<Edge> &edges, vector<Vertex> &vertices,
     file.close();
     return true;
 }
-bool ImportCell2Ds(vector<Triangle> &triangles, vector<Edge> &edges,
-                   vector<Vertex> &vertices, unsigned int n, string &test) {
+bool ImportCell2Ds(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &vertices, unsigned int n, string &test)
+{
 
     ifstream file;
     string inFile = "./Dataset/Test" + test + "/Cell2Ds.csv";
@@ -483,10 +446,12 @@ bool ImportCell2Ds(vector<Triangle> &triangles, vector<Edge> &edges,
         array<unsigned int, 3> tempVertices;
 
         converter >> id;
-        for (unsigned int i = 0; i < 3; i++) {
+        for (unsigned int i = 0; i < 3; i++)
+        {
             converter >> tempVertices[i];
         }
-        for (unsigned int i = z; i < (z + 3); i++) {
+        for (unsigned int i = z; i < (z + 3); i++)
+        {
             converter >> tempEdges[i];
         }
 
@@ -495,7 +460,8 @@ bool ImportCell2Ds(vector<Triangle> &triangles, vector<Edge> &edges,
         Pushback(triangles[id].vertices, vertices[tempVertices[1]]);
         Pushback(triangles[id].vertices, vertices[tempVertices[2]]);
         // assegno a ogni lato un puntatore al triangolo che lo costituisce
-        for (unsigned int j = z; j < (z + 3); j++) {
+        for (unsigned int j = z; j < (z + 3); j++)
+        {
             edges[tempEdges[j]].adjTriangles.reserve(3);
             Pushback(edges[tempEdges[j]].adjTriangles, triangles[id].id);
         }
@@ -519,5 +485,4 @@ bool ImportCell2Ds(vector<Triangle> &triangles, vector<Edge> &edges,
     file.close();
     return true;
 }
-// ***************************************************************************
-} // namespace ProjectLibrary
+}

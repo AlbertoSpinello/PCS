@@ -18,7 +18,7 @@ struct Vertex
     double y;
     unsigned int id;
 
-    Vertex(double& x, double& y, unsigned int& id):
+    Vertex(double x, double y, unsigned int id):
         x(x), y(y), id(id)
     {}
     Vertex():
@@ -29,9 +29,9 @@ struct Vertex
     {return id > other.id;}
     inline bool operator<(const Vertex& other) const
     {return id < other.id;}
-    inline bool operator==(const Vertex& other)
+    inline bool operator==(const Vertex& other) const
     {return id == other.id;}
-    inline bool operator!=(const Vertex& other)
+    inline bool operator!=(const Vertex& other) const
     {return !(id == other.id);}
 
 };
@@ -58,13 +58,11 @@ struct Edge
         length = sqrt(pow(finish.y-start.y, 2) + pow(finish.x-start.x, 2));
     }
 
-    static constexpr double geometricTol = 1.0e-12;
-
     inline bool operator>(const Edge& other)
     {return length > other.length;}
 
     inline bool operator<(const Edge& other)
-    {return length < other.length;}
+    {return length  < other.length;}
 
     inline bool operator==(const Edge& other)
     {return id == other.id;}
@@ -100,26 +98,20 @@ public:
     Triangle():
         id(0)
     {}
-    Triangle(vector<Vertex>& vertices):
-        area(0)
-    {
-        area = abs(vertices[0].x*(vertices[1].y-vertices[2].y) +
-                   vertices[1].x*(vertices[2].y-vertices[0].y)  +
-                   vertices[2].x*(vertices[0].y-vertices[1].y)) / 2;
-    }
-    static constexpr double geometricTol = 1.0e-12;
+
     // quando confronto due triangoli, uno è maggiore dell'altro in base alle loro aree
     inline bool operator>(const Triangle& other)
-    {return area + geometricTol > other.area;}
+    {return area  > other.area;}
 
     inline bool operator<(const Triangle& other)
-    {return area - geometricTol < other.area;}
+    {return area < other.area;}
 
     inline bool operator==(const Triangle& other)
     {return id == other.id;}
 
     inline bool operator!=(const Triangle& other)
     {return !(id == other.id);}
+
     void set_area()
     {
         area = abs(vertices[0].x*(vertices[1].y-vertices[2].y) +
@@ -129,51 +121,72 @@ public:
 };
 
 //sfrutto l'algortimo di quicksort per ordinare i triangoli in base alla loro area
-void Refine(vector<Triangle>& triangles, vector<Edge>& edges, vector<Vertex>& vertices, unsigned int &n, string &test);
+void Refine(vector<Triangle>& triangles, vector<Edge>& edges, vector<Vertex>& vertices, unsigned int &n);
 //importa i vertici della mesh triangolare
 bool ImportCell0Ds(vector<Vertex>& vertices, unsigned int n, string& test);
 //importa i lati della mesh triangolare
 bool ImportCell1Ds(vector<Edge>& edges, vector<Vertex>& vertices, unsigned int n, string& test);
 //importa i triangoli della mesh
 bool ImportCell2Ds(vector<Triangle>& triangles, vector<Edge>& edges, vector<Vertex>& vertices, unsigned int n, string &test);
-// sfrutto l'algoritmo di insertion sort per ordinare array di piccole dimensioni, oppure parzialmente ordinati
-inline void insertionSort(vector<Edge> &edge);
-// ricava il vertice opposto dato un lato e un triangolo
-inline Vertex getOppositeVertex(Triangle& triangle, Edge& edge);
 //divido triangolo in 2
 void split2(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &vertices, unsigned int m,
-            queue<unsigned int> &tempId, unsigned int &k, bool &permissible, queue<unsigned int> &tempId1);
+            deque<unsigned int> &tempId, unsigned int &k, bool &permissible, deque<unsigned int> &tempId1);
 //divido i triangoli successivi in 3 sottotriangoli
 void split3(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &vertices,
-            queue<unsigned int> &tempId, unsigned int &k, bool &permissible, queue<unsigned int> &tempId1);
-void split2again (vector<Triangle> &triangles, vector<Edge> &edges,
-                 vector<Vertex> &vertices, unsigned int &k, bool &permissible, queue<unsigned int> &tempId1);
+            deque<unsigned int> &tempId, unsigned int &k, bool &permissible, deque<unsigned int> &tempId1);
+void split2again (vector<Triangle> &triangles, vector<Edge> &edges,vector<Vertex> &vertices,
+                 unsigned int &k, bool &permissible, deque<unsigned int> &tempId, deque<unsigned int> &tempId1);
+
 template <typename T>
-inline void Pushback(vector<T>& edges, T& edge);
+inline void Pushback(vector<T> &edges, T &edge)
+{
+    edges.push_back(edge);
+}
+
+// sfrutto l'algortimo di quicksort per ordinare i triangoli in base alla loro area
+
+inline void insertionSort(vector<Edge> &edge)
+{
+    unsigned int n= edge.size();
+    for (int i = 0; i < n; i++)
+    {
+        Edge key = edge[i];
+        int j = i - 1;
+        while (j >= 0 && edge[j] < key)
+        {
+            edge[j + 1] = edge[j];
+            j = j - 1;
+        }
+        edge[j + 1] = key;
+    }
+}
 template <typename T>
-inline void Erase(vector<T>& triangles, unsigned int& index);
-inline unsigned int massimoElementoAttivo(vector<Triangle> &vettore);
-inline Vertex set_mid(Edge edge);
-template <typename T>
-inline void Erase(vector<T> &triangles, unsigned int index) {
-    if (index < triangles.size()) {
+inline void Erase(vector<T> &triangles, unsigned int index)
+{
+    if (index < triangles.size())
+    {
         triangles.erase(triangles.begin() + index);
     }
 }
 
-inline unsigned int massimoElementoAttivo(vector<Triangle> &vettore) {
+inline unsigned int massimoElementoAttivo(vector<Triangle> &vettore)
+{
     Triangle massimo;
     massimo.area = 0;
-    for (Triangle &elemento : vettore) {
-        if (elemento.active) { // Verifica se l'elemento è attivo
+    for (Triangle &elemento : vettore)
+    {
+        if (elemento.active)
+        { // Verifica se l'elemento è attivo
             if (elemento > massimo)
                 massimo = elemento;
         }
     }
     return massimo.id;
 }
-inline Vertex getOppositeVertex(Triangle &triangle, Edge &edge) {
-    for (unsigned int i = 0; i < 3; i++) {
+inline Vertex getOppositeVertex(Triangle &triangle, Edge &edge)
+{
+    for (unsigned int i = 0; i < 3; i++)
+    {
         if (triangle.vertices[i] != (edge.start) &&
             triangle.vertices[i] != (edge.finish))
             return triangle.vertices[i];
@@ -181,7 +194,8 @@ inline Vertex getOppositeVertex(Triangle &triangle, Edge &edge) {
     throw(runtime_error("Something went wrong getting the opposite vertex"));
 }
 // Prendo il punto medio di un lato
-inline Vertex set_mid(Edge edge) {
+inline Vertex set_mid(Edge edge)
+{
     Vertex mid;
     mid.x = (edge.finish.x + edge.start.x) / 2;
     mid.y = (edge.finish.y + edge.start.y) / 2;
