@@ -36,7 +36,6 @@ struct Vertex
 
 };
 // il lato è formato da puntatori a due vertici
-class Triangle; //forward declaration
 struct Edge
 {
     bool active = true;
@@ -80,19 +79,11 @@ public:
     double area;
     unsigned int id;
     vector<Edge> edges;
-    vector<Vertex> vertices;
     Triangle (vector<Edge> edge, unsigned int id):
         id(id), edges(edge)
     {
-        vertices.push_back(edges[0].start);
-        vertices.push_back(edges[0].finish);
-        if (edges[1].start != edges[0].start && edges[1].start != edges[0].finish)
-            vertices.push_back(edges[1].start);
-        else
-            vertices.push_back(edges[1].finish);
-        area = abs(vertices[0].x*(vertices[1].y-vertices[2].y) +
-                   vertices[1].x*(vertices[2].y-vertices[0].y)  +
-                   vertices[2].x*(vertices[0].y-vertices[1].y)) / 2;
+        double s = (edges[0].length + edges[1].length + edges[2].length) / 2;
+        area = sqrt(s * (s - edges[0].length) * (s - edges[1].length) * (s - edges[2].length));
     }
 
     Triangle():
@@ -114,9 +105,8 @@ public:
 
     void set_area()
     {
-        area = abs(vertices[0].x*(vertices[1].y-vertices[2].y) +
-                   vertices[1].x*(vertices[2].y-vertices[0].y)  +
-                   vertices[2].x*(vertices[0].y-vertices[1].y)) / 2;
+        double s = (edges[0].length + edges[1].length + edges[2].length) / 2;
+        area = sqrt(s * (s - edges[0].length) * (s - edges[1].length) * (s - edges[2].length));
     }
 };
 
@@ -172,7 +162,7 @@ inline void Erase(vector<T> &triangles, unsigned int index)
 inline void massimoElementoAttivo(vector<Triangle> &vettore, unsigned int& m)
 {
     Triangle massimo;
-    massimo.area = 0;
+    massimo.area = -1;
     for (Triangle &elemento : vettore)
     {
         if (elemento.active)
@@ -189,9 +179,12 @@ inline Vertex getOppositeVertex(Triangle &triangle, Edge &edge)
 {
     for (unsigned int i = 0; i < 3; i++)
     {
-        if (triangle.vertices[i] != (edge.start) &&
-            triangle.vertices[i] != (edge.finish))
-            return triangle.vertices[i];
+        if (triangle.edges[i].start != (edge.start) &&
+            triangle.edges[i].start != (edge.finish))
+            return triangle.edges[i].start;
+        else if (triangle.edges[i].finish != (edge.start) &&
+            triangle.edges[i].finish != (edge.finish))
+            return triangle.edges[i].finish;
     }
     throw(runtime_error("Something went wrong getting the opposite vertex"));
 }

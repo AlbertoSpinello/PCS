@@ -395,7 +395,6 @@ bool ImportCell1Ds(vector<Edge> &edges, vector<Vertex> &vertices, unsigned int n
 bool ImportCell2Ds(vector<Triangle> &triangles, vector<Edge> &edges,
                    vector<Vertex> &vertices, unsigned int n, string &test)
 {
-
     ifstream file;
     string inFile = "./Dataset/Test" + test + "/Cell2Ds.csv";
     file.open(inFile);
@@ -436,16 +435,12 @@ bool ImportCell2Ds(vector<Triangle> &triangles, vector<Edge> &edges,
         }
 
         triangles[id].id = id;
-        Pushback(triangles[id].vertices, vertices[tempVertices[0]]);
-        Pushback(triangles[id].vertices, vertices[tempVertices[1]]);
-        Pushback(triangles[id].vertices, vertices[tempVertices[2]]);
         // assegno a ogni lato un puntatore al triangolo che lo costituisce
         for (unsigned int j = z; j < (z + 3); j++)
         {
             edges[tempEdges[j]].adjTriangles.reserve(3);
             Pushback(edges[tempEdges[j]].adjTriangles, triangles[id].id);
         }
-        triangles[id].set_area(); // assegno l'area al triangolo
         z = z + 3;
     }
     z = 0;
@@ -459,6 +454,7 @@ bool ImportCell2Ds(vector<Triangle> &triangles, vector<Edge> &edges,
             else if (triangles[i].edges[j - z].adjTriangles[1] == triangles[i].id)
                 Erase(triangles[i].edges[j - z].adjTriangles,triangles[i].edges[j - z].adjTriangles.size() -1); // Se no levo l'altro
         }
+        triangles[i].set_area(); // assegno l'area al triangolo
         z = z + 3;
     }
     file.close();

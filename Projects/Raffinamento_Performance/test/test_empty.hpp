@@ -52,26 +52,24 @@ TEST(TestArea, TestSum)
 TEST(TestEdges, TestAllvertices)
 {
     bool flag = true;
+    set<unsigned int> verticesE;
+    set<unsigned int> verticesT;
     for(unsigned int i=0; i<Triangles.size();i++)
     {
-        vector<Vertex> tempVerticesT = Triangles[i].vertices;
-        set<unsigned int> verticesT;
-        for(unsigned int j=0; j<tempVerticesT.size(); j++)
-            verticesT.insert(tempVerticesT[j].id);
-        set<unsigned int> verticesE;
         for(unsigned int k=0; k<3; k++)
         {
             verticesE.insert(Triangles[i].edges[k].finish.id);
             verticesE.insert(Triangles[i].edges[k].start.id);
         }
-
-        //controllo se il set dei vertici del triangolo è uguale al set formato dagli estremi dei lati
-        if(verticesE != verticesT)
-        {
-            flag = false;
-            break;
-        }
-
+    }
+    for (const Vertex& vertex : Vertices)
+    {
+        verticesT.insert(vertex.id);
+    }
+    //controllo se il set dei vertici è uguale al set formato dagli estremi dei lati
+    if(verticesE != verticesT)
+    {
+        flag = false;
     }
     ASSERT_TRUE(flag);
 }
