@@ -159,22 +159,31 @@ inline void Erase(vector<T> &triangles, unsigned int index)
     }
 }
 
-inline void massimoElementoAttivo(vector<Triangle> &vettore, unsigned int& m)
+inline void massimoElementoAttivo(vector<Triangle> &vettore, unsigned int &m, unsigned int &p)
 {
     Triangle massimo;
     massimo.area = -1;
-    for (Triangle &elemento : vettore)
+    bool enteredActiveCondition = false;
+
+    for (unsigned int i=p; i<vettore.size(); i++)
     {
-        if (elemento.active)
-        { // Verifica se l'elemento è attivo
-            if (elemento > massimo)
-                massimo = elemento;
+        if (vettore[i].active)
+        {
+            enteredActiveCondition = true;
+            if (vettore[i] > massimo)
+                massimo = vettore[i];
         }
-        if (vettore[m].area-massimo.area< 1.0e-12)
+        if (!enteredActiveCondition)
+        {
+            p++;
+        }
+        if (vettore[m].area - massimo.area < 1.0e-12)
             break;
     }
-    m=massimo.id;
+
+    m = massimo.id;
 }
+
 inline Vertex getOppositeVertex(Triangle &triangle, Edge &edge)
 {
     for (unsigned int i = 0; i < 3; i++)

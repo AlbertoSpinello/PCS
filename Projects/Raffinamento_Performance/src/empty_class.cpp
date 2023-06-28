@@ -287,11 +287,11 @@ void split3(vector<Triangle> &triangles, vector<Edge> &edges,vector<Vertex> &ver
 // all'area
 void Refine(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &vertices, unsigned int &n)
 {
-    unsigned int m=0;
+    unsigned int m=0,p=0;
     for (unsigned int i=0; i<n ; i++)
     {
         bool permissible = false;
-        massimoElementoAttivo(triangles,m);
+        massimoElementoAttivo(triangles,m,p);
         deque<unsigned int> tempId;  // Salvo gli ultimi 2 lati più lunghi
         deque<unsigned int> tempId1; // Salvo gli id dei nuovi lati spezzati
         unsigned int k = 0;          // K-esimo triangolo da raffinare

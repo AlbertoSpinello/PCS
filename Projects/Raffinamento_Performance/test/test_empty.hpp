@@ -130,8 +130,8 @@ TEST(Testmassimo, TestmassimoTriangle)
     triangle3.id=20;
     triangle3.active=false;
     vector<Triangle> vector = {triangle1, triangle2, triangle3};
-    unsigned int id =0;
-    massimoElementoAttivo(vector,id);
+    unsigned int id=0,p =0;
+    massimoElementoAttivo(vector,id,p);
     EXPECT_EQ(id, 30);
 }
 
