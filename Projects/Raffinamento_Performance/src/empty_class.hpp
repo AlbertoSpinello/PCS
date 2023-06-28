@@ -35,7 +35,7 @@ struct Vertex
     {return !(id == other.id);}
 
 };
-// il lato è formato da puntatori a due vertici
+
 struct Edge
 {
     bool active = true;
@@ -70,7 +70,7 @@ struct Edge
     {return !(id == other.id);}
 
 };
-// il triangolo è formato da area, id, lati e vertici
+// il triangolo è formato da area, id e lati
 class Triangle
 {
 private:
@@ -110,7 +110,6 @@ public:
     }
 };
 
-//sfrutto l'algortimo di quicksort per ordinare i triangoli in base alla loro area
 void Refine(vector<Triangle>& triangles, vector<Edge>& edges, vector<Vertex>& vertices, unsigned int &n);
 //importa i vertici della mesh triangolare
 bool ImportCell0Ds(vector<Vertex>& vertices, unsigned int n, string& test);
@@ -133,7 +132,6 @@ inline void Pushback(vector<T> &edges, T &edge)
     edges.push_back(edge);
 }
 
-// sfrutto l'algortimo di quicksort per ordinare i triangoli in base alla loro area
 
 inline void insertionSort(vector<Edge> &edge)
 {

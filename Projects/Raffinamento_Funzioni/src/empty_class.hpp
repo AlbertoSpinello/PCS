@@ -71,8 +71,7 @@ struct Vertex
     {return !(id == other.id);}
 
 };
-// il lato è formato da puntatori a due vertici
-class Triangle; //forward declaration
+
 struct Edge
 {
     bool active = true;

@@ -10,7 +10,7 @@ string ProjectLibrary::Triangle::function;
 void split2(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &vertices, unsigned int m, deque<unsigned int> &tempId,
             unsigned int &k, bool &permissible, deque<unsigned int> &tempId1, double &area)
 {
-    insertionSort(triangles[m].edges); // Sistemo i lati in ordine crescente
+    insertionSort(triangles[m].edges); // Sistemo i lati in ordine decrescente
     tempId.push_back(triangles[m].edges[0].id); // Aggiungo nuovo lato lungo
     Vertex opposite =getOppositeVertex(triangles[m], triangles[m].edges[0]); // Lato opposto
     Vertex mid = set_mid(triangles[m].edges[0]);

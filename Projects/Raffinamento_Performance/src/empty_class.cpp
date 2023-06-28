@@ -6,7 +6,7 @@ namespace ProjectLibrary
 void split2(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &vertices, unsigned int m, deque<unsigned int> &tempId,
             unsigned int &k, bool &permissible, deque<unsigned int> &tempId1)
 {
-    insertionSort(triangles[m].edges); // Sistemo i lati in ordine crescente
+    insertionSort(triangles[m].edges); // Sistemo i lati in ordine decrescente
     tempId.push_back(triangles[m].edges[0].id); // Aggiungo nuovo lato lungo
     Vertex opposite =getOppositeVertex(triangles[m], triangles[m].edges[0]); // Lato opposto
     Vertex mid = set_mid(triangles[m].edges[0]);
@@ -18,7 +18,7 @@ void split2(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &ve
     vector<Edge> newEdgesV1;
     vector<Edge> newEdgesV2;
     // nel modo seguente, creo i nuovi triangoli in modo corretto, assegnando il
-    // lato giusto ai nuovi triangoli creati il flag risparmia tempo, per evitare
+    // lato giusto ai nuovi triangoli creati, il flag risparmia tempo, per evitare
     // di ricontrollare
     bool flag = false;
     if (triangles[m].edges[1].start == triangles[m].edges[0].start ||
@@ -67,7 +67,8 @@ void split2(vector<Triangle> &triangles, vector<Edge> &edges, vector<Vertex> &ve
             }
         }
     }
-    if (triangles[m].edges[2].adjTriangles.size() > 0) {
+    if (triangles[m].edges[2].adjTriangles.size() > 0)
+    {
         for (unsigned int j = 0; j < 3; j++)
         {
             if (triangles[triangles[m].edges[2].adjTriangles[0]].edges[j].adjTriangles.size() > 0 &&
@@ -265,7 +266,8 @@ void split3(vector<Triangle> &triangles, vector<Edge> &edges,vector<Vertex> &ver
     bool flag1 = true;
     if (triangles[z].edges[1] == triangles[tempId1.front()].edges[1]) //Sistemo i nuovi triangoli creati dentro il mio tempId
         flag1 = false;
-    if (newTriangle3.edges[1] == triangles[z].edges[1]) {
+    if (newTriangle3.edges[1] == triangles[z].edges[1])
+    {
         if (flag1)
             tempId1.back() = newTriangle3.id;
         else
