@@ -39,7 +39,7 @@ struct Vertex
 struct Edge
 {
     bool active = true;
-    double geometricTol = 1e-12;
+    static constexpr double geometricTol = 1e-12;
     Vertex start;
     Vertex finish ;
     vector<unsigned int> adjTriangles;
@@ -76,7 +76,7 @@ class Triangle
 {
 private:
 public:
-    double geometricTol = 1e-12;
+    static constexpr double geometricTol = 1e-12;
     bool active = true;
     double area;
     unsigned int id;
