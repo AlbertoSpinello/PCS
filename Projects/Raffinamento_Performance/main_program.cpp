@@ -24,14 +24,14 @@ int main(int argc, char** argv)
     ImportCell1Ds(marco, ciro, n, test);
     ImportCell2Ds(cosimo, marco, ciro, n, test);
     ProjectLibrary::Refine(cosimo, marco, ciro, n);
-    ofstream outputFile("C:/Users/Gentian/Downloads/outputPunti.csv");
+    ofstream outputFile("C:/Users/Alberto/Dropbox (Politecnico Di Torino Studenti)/PC/Desktop/foto_progetto/outputPunti.csv");
     for (unsigned int i=0; i<ciro.size(); i++)
     {
         outputFile<<ciro[i].x<<";"<<ciro[i].y<<"\n";
     }
     outputFile.close();
 
-    ofstream outputFile1("C:/Users/Gentian/Downloads/outputLati.csv");
+    ofstream outputFile1("C:/Users/Alberto/Dropbox (Politecnico Di Torino Studenti)/PC/Desktop/foto_progetto/outputLati.csv");
     for (unsigned int i=0; i<marco.size(); i++)
     {
         if (marco[i].active)

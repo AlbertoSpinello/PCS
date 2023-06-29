@@ -39,6 +39,7 @@ struct Vertex
 struct Edge
 {
     bool active = true;
+    double geometricTol = 1e-12;
     Vertex start;
     Vertex finish ;
     vector<unsigned int> adjTriangles;
@@ -58,10 +59,10 @@ struct Edge
     }
 
     inline bool operator>(const Edge& other)
-    {return length > other.length;}
+    {return length-geometricTol > other.length;}
 
     inline bool operator<(const Edge& other)
-    {return length  < other.length;}
+    {return length+geometricTol  < other.length;}
 
     inline bool operator==(const Edge& other)
     {return id == other.id;}
@@ -75,6 +76,7 @@ class Triangle
 {
 private:
 public:
+    double geometricTol = 1e-12;
     bool active = true;
     double area;
     unsigned int id;
@@ -92,10 +94,10 @@ public:
 
     // quando confronto due triangoli, uno è maggiore dell'altro in base alle loro aree
     inline bool operator>(const Triangle& other)
-    {return area  > other.area;}
+    {return area-geometricTol > other.area;}
 
     inline bool operator<(const Triangle& other)
-    {return area < other.area;}
+    {return area+ geometricTol < other.area;}
 
     inline bool operator==(const Triangle& other)
     {return id == other.id;}
